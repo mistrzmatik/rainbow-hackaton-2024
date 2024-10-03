@@ -3,10 +3,6 @@ name = "point-salad"
 version = "0.1.0"
 edition = "2021"
 
-[[bin]]
-name = "game-client"
-path = "src/main.rs"
-
 [dependencies]
 tonic = "0.12"
 prost = "0.13"

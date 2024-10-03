@@ -1,0 +1,9 @@
+target
+
+# Ignore Git files and directories
+.git
+.gitignore
+
+# Ignore editor/project-specific directories (optional)
+.idea
+.vscode
