@@ -14,12 +14,13 @@ use crate::strategies::strategy::Strategy;
 mod point_salad_server;
 mod strategies;
 mod models;
+mod helpers;
 mod points;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let url = "http://hackaton-2024.rainbowtours.pl:80";
-    //let url = "http://[::1]:50051";
+    //let url = "http://hackaton-2024.rainbowtours.pl:80";
+    let url = "http://[::1]:50051";
     let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka";
     let room_id = "AIT9B";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
