@@ -78,14 +78,42 @@ impl Strategy for MinMaxStrategy {
             }
         }
 
-        if max_option.is_empty() {
-            println!("Lipa jest")
-        }
-        
         max_option
     }
 
     fn make_flip_move(&self, state: &GameState) -> Vec<String> {
+        /*let your_hand = state.your_hand.clone().unwrap_or(Hand {
+            point_cards: vec![],
+            vegetables: vec![]
+        });
+        let opponents_hand = state.opponents_hands.clone().get(0).unwrap_or(&Hand {
+            point_cards: vec![],
+            vegetables: vec![]
+        }).clone();
+
+        let base_cards = [your_hand.point_cards.as_slice(), create_cards(your_hand.vegetables).as_slice()].concat();
+        let base_opponent_cards = [opponents_hand.point_cards.as_slice(), create_cards(opponents_hand.vegetables).as_slice()].concat();
+
+        let base_points = calculate_points(&base_cards, &base_opponent_cards);
+
+        let mut max_points = -1000isize;
+        let mut max_option = vec![];
+        for point_card in &your_hand.point_cards {
+            let mut possible_cards = your_hand.point_cards.clone();
+            let index = your_hand.point_cards.iter().position(|x| x == point_card).unwrap();
+            possible_cards.remove(index);
+            
+            let possible_points = calculate_points(&possible_cards, &base_opponent_cards);
+            if possible_points > max_points {
+                max_points = possible_points;
+                max_option = vec![point_card.card_id.to_string()]
+            }
+        }
+        
+        if max_points > base_points {
+            return max_option;
+        }*/
+        
         vec![]
     }
 }
@@ -98,7 +126,7 @@ fn create_cards(vegetables_held: Vec<VegtableHeld>) -> Vec<Card> {
             carts.push(Card {
                 vegetable: vegetable_held.vegetable_type,
                 point_type: 0,
-                card_id: "uknown".to_string(),
+                card_id: "unknown".to_string(),
                 sum: None,
                 other: None,
                 fewest_most: None,

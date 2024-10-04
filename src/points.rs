@@ -35,27 +35,34 @@ const AT_LEAST_THREE: i32 = 13;
 const MISSING_VEGETABLE: i32 = 14;
 
 fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponent_vegetables_carts: &Vec<&Card>) -> isize {
-    if card.points_per_vegetable.is_some() {
+    if let Some(points_per_vegetable) = card.points_per_vegetable.clone() {
         let mut points = 0;
-        for point in card.clone().points_per_vegetable.unwrap().points {
+        for point in points_per_vegetable.points {
             points += vegetables_carts.iter().filter(|c| c.vegetable == point.vegetable).count() * points;
         }
         return points as isize;
     }
     
-    if card.sum.is_some() {
-        let mut min_count = 10000;
-        for vegetable in card.clone().sum.unwrap().vegetables {
+    if let Some(sum) = card.sum.clone() {
+        let first_vegetable = sum.vegetables.get(0).unwrap_or(&0);
+        let the_same_vegetable = sum.vegetables.iter().all(|v| v == first_vegetable);
+        return if the_same_vegetable {
+            let vegetable = first_vegetable.clone();
             let vegetable_count = vegetables_carts.iter().filter(|c| c.vegetable == vegetable).count();
-            if vegetable_count < min_count {
-                min_count = vegetable_count
+            (vegetable_count as isize / sum.vegetables.len() as isize) * sum.points as isize
+        } else {
+            let mut min_count = 10000;
+            for vegetable in sum.vegetables {
+                let vegetable_count = vegetables_carts.iter().filter(|c| c.vegetable == vegetable).count();
+                if vegetable_count < min_count {
+                    min_count = vegetable_count
+                }
             }
+            min_count as isize * sum.points as isize
         }
-        return min_count as isize * card.clone().sum.unwrap().points as isize;
     }
-    
-    if card.even_odd.is_some() {
-        let even_odd = card.even_odd.unwrap();
+
+    if let Some(even_odd) = card.even_odd.clone() {
         let vegetable_count = vegetables_carts.iter().filter(|c| c.vegetable == even_odd.vegetable).count();
         if vegetable_count == 0 || vegetable_count % 2 != 0 {
             return even_odd.odd as isize;
@@ -63,9 +70,8 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
             return even_odd.even as isize;
         }
     }
-    
-    if card.fewest_most.is_some() {
-        let fewest_most = card.fewest_most.unwrap();
+
+    if let Some(fewest_most) = card.fewest_most.clone() {
         let vegetable_count = vegetables_carts.iter().filter(|c| c.vegetable == fewest_most.vegetable).count();
         let opponent_vegetable_count = opponent_vegetables_carts.iter().filter(|c| c.vegetable == fewest_most.vegetable).count();
         if card.point_type == MOST {
@@ -78,9 +84,8 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
             }
         }
     }
-    
-    if card.other.is_some() {
-        let other = card.other.unwrap();
+
+    if let Some(other) = card.other.clone() {
         let total_vegetable_count = vegetables_carts.len();
         let total_opponent_vegetable_count = opponent_vegetables_carts.len();
         

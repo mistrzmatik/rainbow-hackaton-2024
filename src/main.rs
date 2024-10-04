@@ -22,14 +22,15 @@ mod points;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let url = "http://hackaton-2024.rainbowtours.pl:80";
     let url = "http://[::1]:50051";
-    let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka";
+    let mut player_name = "rozrewolwerowana konstantynopolitańczykowianeczka".to_string();
     let room_id = "AIT9C";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
     let number_of_games = 100;
 
     let strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() 
-    { 
-        Box::new(MinMaxStrategy::new()) 
+    {
+        player_name += " - MINMAX";
+        Box::new(MinMaxStrategy::new())
     } 
     else 
     { 
