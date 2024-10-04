@@ -1,38 +1,41 @@
 use rand::Rng;
 use rand::seq::IteratorRandom;
-use crate::point_salad_server::{GameState, Market};
+use crate::point_salad_server::{GameState, Hand, Market};
 use crate::strategies::strategy::Strategy;
 
-pub struct RandomStrategy {}
+pub struct RandomStrategy {
+    take_point_card_probability: f64,
+    flip_card_probability: f64
+}
 
 impl RandomStrategy {
     pub fn new() -> RandomStrategy {
-        RandomStrategy {}
+        RandomStrategy {
+            take_point_card_probability: 0.4,
+            flip_card_probability: 0.02
+        }
     }
 }
 
 impl Strategy for RandomStrategy {
     fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
-        let any_point_cards_available = state
+        let market = state
             .market
             .clone()
-            .unwrap_or_else(|| Market {
+            .unwrap_or(Market {
                 point_cards : vec![],
                 vegetable_cards: vec![]
-            })
+            });
+        
+        let take_point_card = rand::thread_rng().gen_bool(self.take_point_card_probability);
+        let any_point_cards_available = market
             .point_cards
             .iter()
             .filter(|c| c.card_id != "")
             .any(|c| true);
 
-        let cards: Vec<_> = if rand::thread_rng().gen_bool(0.5f64) && any_point_cards_available {
-            state
-                .market
-                .clone()
-                .unwrap_or_else(|| Market {
-                    point_cards : vec![],
-                    vegetable_cards: vec![]
-                })
+        let cards: Vec<_> = if take_point_card && any_point_cards_available {
+            market
                 .point_cards
                 .iter()
                 .filter(|c| c.card_id != "")
@@ -41,25 +44,7 @@ impl Strategy for RandomStrategy {
                 .map(|c| c.card_id.to_string())
                 .collect()
         } else {
-            let vegetable_cards_count = state
-                .market
-                .clone()
-                .unwrap_or_else(|| Market {
-                    point_cards : vec![],
-                    vegetable_cards: vec![]
-                })
-                .vegetable_cards
-                .iter()
-                .filter(|c| c.card_id != "")
-                .count();
-
-            state
-                .market
-                .clone()
-                .unwrap_or_else(|| Market {
-                    point_cards : vec![],
-                    vegetable_cards: vec![]
-                })
+            market
                 .vegetable_cards
                 .iter()
                 .filter(|c| c.card_id != "")
@@ -73,6 +58,34 @@ impl Strategy for RandomStrategy {
     }
 
     fn make_flip_move(&self, state: &GameState) -> Vec<String> {
-        vec![]
+        let flip_card = rand::thread_rng().gen_bool(self.flip_card_probability);
+        if flip_card {
+            return vec![];
+        }
+        
+        let cards_available_to_flip: Vec<String> = state.your_hand
+            .clone()
+            .unwrap_or(Hand {
+                point_cards: vec![],
+                vegetables: vec![]
+            })
+            .point_cards
+            .iter()
+            .filter(|c| c.card_id != "")
+            .into_iter()
+            .map(|c| c.card_id.to_string())
+            .collect();
+        if cards_available_to_flip.is_empty() {
+            return vec![];
+        }
+        
+        let cards = cards_available_to_flip
+            .iter()
+            .choose_multiple(&mut rand::thread_rng(), 1)
+            .into_iter()
+            .map(|c| c.to_string())
+            .collect();
+
+        cards
     }
 }
