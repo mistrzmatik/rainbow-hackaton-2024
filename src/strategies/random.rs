@@ -26,7 +26,7 @@ impl Strategy for RandomStrategy {
                 point_cards : vec![],
                 vegetable_cards: vec![]
             });
-        
+
         let take_point_card = rand::thread_rng().gen_bool(self.take_point_card_probability);
         let any_point_cards_available = market
             .point_cards
@@ -62,7 +62,7 @@ impl Strategy for RandomStrategy {
         if flip_card {
             return vec![];
         }
-        
+
         let cards_available_to_flip: Vec<String> = state.your_hand
             .clone()
             .unwrap_or(Hand {
@@ -78,7 +78,7 @@ impl Strategy for RandomStrategy {
         if cards_available_to_flip.is_empty() {
             return vec![];
         }
-        
+
         let cards = cards_available_to_flip
             .iter()
             .choose_multiple(&mut rand::thread_rng(), 1)

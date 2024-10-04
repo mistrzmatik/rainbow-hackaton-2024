@@ -14,6 +14,8 @@ use crate::strategies::strategy::Strategy;
 mod point_salad_server;
 mod strategies;
 mod models;
+mod calculator;
+mod points;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
