@@ -11,7 +11,7 @@ pub struct RandomStrategy {
 impl RandomStrategy {
     pub fn new() -> RandomStrategy {
         RandomStrategy {
-            take_point_card_probability: 0.4,
+            take_point_card_probability: 0.5,
             flip_card_probability: 0.02
         }
     }

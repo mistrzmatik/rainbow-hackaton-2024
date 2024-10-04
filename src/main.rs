@@ -14,19 +14,20 @@ use crate::strategies::strategy::Strategy;
 mod point_salad_server;
 mod strategies;
 mod models;
-mod calculator;
 mod points;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let url = "http://hackaton-2024.rainbowtours.pl:80";
+    //let url = "http://[::1]:50051";
     let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka";
-    let room_id = "ABCD123";
+    let room_id = "AIT9B";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
     let number_of_games = 10;
 
     let strategy = RandomStrategy::new();
     
-    let mut client = GameClient::connect("http://[::1]:50051").await?;
+    let mut client = GameClient::connect(url).await?;
 
     if new {
         let request = Request::new(Config {
