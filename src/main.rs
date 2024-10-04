@@ -15,10 +15,11 @@ mod point_salad_server;
 mod strategies;
 mod models;
 mod helpers;
+mod points;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let player_name = "rust";
+    let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka";
     let room_id = "ABCD123";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
     let number_of_games = 10;
