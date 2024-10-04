@@ -1,10 +1,9 @@
-use std::collections::{HashMap};
 use crate::point_salad_server::{Card, VegetableType};
 
-pub fn calculate_points(cards: Vec<Card>, opponent_cards: Vec<Card>) -> usize {
+pub fn calculate_points(cards: &Vec<Card>, opponent_cards: &Vec<Card>) -> usize {
     let point_carts: Vec<_> = cards.iter().filter(|c| c.point_type != 0).collect();
-    let vegetables_carts: Vec<_> =  cards.iter().filter(|c| c.point_type == 0).collect();
-    let opponent_vegetables_carts: Vec<_> =  cards.iter().filter(|c| c.point_type == 0).collect();
+    let vegetables_carts: Vec<_> = cards.iter().filter(|c| c.point_type == 0).collect();
+    let opponent_vegetables_carts: Vec<_> = opponent_cards.iter().filter(|c| c.point_type == 0).collect();
     
     let mut points = 0;
     for point_cart in point_carts {
