@@ -1,5 +1,4 @@
 syntax = "proto3";
-package point_salad;
 
 message Config {
     string roomID = 1;

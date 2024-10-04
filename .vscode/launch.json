@@ -7,7 +7,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'point-salad'",
+            "name": "Join game",
             "cargo": {
                 "args": [
                     "build",
@@ -20,6 +20,24 @@
                 }
             },
             "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Create game",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=point-salad",
+                    "--package=point-salad"
+                ],
+                "filter": {
+                    "name": "point-salad",
+                    "kind": "bin"
+                }
+            },
+            "args": [ "--new" ],
             "cwd": "${workspaceFolder}"
         }
     ]

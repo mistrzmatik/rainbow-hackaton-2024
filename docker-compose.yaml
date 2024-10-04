@@ -1,0 +1,11 @@
+version: '3'
+services:
+  server:
+    image: server:latest
+
+  point-salad:
+    build: .
+    restart: 'unless-stopped'
+    depends_on:
+      server:
+        condition: service_started
