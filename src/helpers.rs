@@ -1,4 +1,4 @@
-use crate::{point_salad_server::{Card, GameState, Hand, VegtableHeld}};
+/*use crate::{point_salad_server::{Card, GameState, Hand, VegtableHeld}};
 
 pub fn unwrap_hand(hand: &Option<Hand>) -> Hand {
     hand
@@ -69,5 +69,5 @@ fn count_points(card: Card, vegetables: Vec<VegtableHeld>) -> i32 {
     }
 
     total_points
-}
+}*/
 

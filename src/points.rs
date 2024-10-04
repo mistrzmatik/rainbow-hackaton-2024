@@ -1,6 +1,6 @@
 use crate::point_salad_server::{Card, VegetableType};
 
-pub fn calculate_points(cards: &Vec<Card>, opponent_cards: &Vec<Card>) -> usize {
+pub fn calculate_points(cards: &Vec<Card>, opponent_cards: &Vec<Card>) -> isize {
     let point_carts: Vec<_> = cards.iter().filter(|c| c.point_type != 0).collect();
     let vegetables_carts: Vec<_> = cards.iter().filter(|c| c.point_type == 0).collect();
     let opponent_vegetables_carts: Vec<_> = opponent_cards.iter().filter(|c| c.point_type == 0).collect();
@@ -34,13 +34,13 @@ const AT_LEAST_TWO: i32 = 12;
 const AT_LEAST_THREE: i32 = 13;
 const MISSING_VEGETABLE: i32 = 14;
 
-fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponent_vegetables_carts: &Vec<&Card>) -> usize {
+fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponent_vegetables_carts: &Vec<&Card>) -> isize {
     if card.points_per_vegetable.is_some() {
         let mut points = 0;
         for point in card.clone().points_per_vegetable.unwrap().points {
             points += vegetables_carts.iter().filter(|c| c.vegetable == point.vegetable).count() * points;
         }
-        return points;
+        return points as isize;
     }
     
     if card.sum.is_some() {
@@ -51,16 +51,16 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
                 min_count = vegetable_count
             }
         }
-        return min_count * card.clone().sum.unwrap().points as usize;
+        return min_count as isize * card.clone().sum.unwrap().points as isize;
     }
     
     if card.even_odd.is_some() {
         let even_odd = card.even_odd.unwrap();
         let vegetable_count = vegetables_carts.iter().filter(|c| c.vegetable == even_odd.vegetable).count();
         if vegetable_count == 0 || vegetable_count % 2 != 0 {
-            return even_odd.odd as usize;
+            return even_odd.odd as isize;
         } else {
-            return even_odd.even as usize;
+            return even_odd.even as isize;
         }
     }
     
@@ -70,11 +70,11 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
         let opponent_vegetable_count = opponent_vegetables_carts.iter().filter(|c| c.vegetable == fewest_most.vegetable).count();
         if card.point_type == MOST {
             if vegetable_count >= opponent_vegetable_count {
-                return fewest_most.points as usize;
+                return fewest_most.points as isize;
             }
         } else {
             if vegetable_count <= opponent_vegetable_count {
-                return fewest_most.points as usize;
+                return fewest_most.points as isize;
             }
         }
     }
@@ -87,12 +87,12 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
         match card.point_type {
             MOST_TOTAL => {
                 if total_vegetable_count >= total_opponent_vegetable_count {
-                    return other.points as usize;
+                    return other.points as isize;
                 }
             },
             FEWEST_TOTAL => {
                 if total_vegetable_count <= total_opponent_vegetable_count {
-                    return other.points as usize;
+                    return other.points as isize;
                 }
             },
             COMPLETE_SET => {
@@ -104,8 +104,8 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
                 vegetable_counts.push(vegetables_carts.iter().filter(|c| c.vegetable == VegetableType::Pepper as i32).count());
                 vegetable_counts.push(vegetables_carts.iter().filter(|c| c.vegetable == VegetableType::Tomato as i32).count());
 
-                let min = vegetable_counts.iter().min().unwrap_or(&0);
-                return min * other.points as usize;
+                let min: &usize = vegetable_counts.iter().min().unwrap_or(&0);
+                return min.clone() as isize * other.points as isize;
             },
             AT_LEAST_TWO | 
             AT_LEAST_THREE => {
@@ -119,7 +119,7 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
 
                 let at_least = if card.point_type == AT_LEAST_TWO { 2usize } else { 3usize };
                 let at_least_count = vegetable_counts.iter().filter(|c| c >= &&at_least).count();
-                return at_least_count * other.points as usize;
+                return at_least_count as isize * other.points as isize;
             },
             MISSING_VEGETABLE => {
                 let mut vegetable_counts = Vec::new();
@@ -131,7 +131,7 @@ fn calculate_points_for_card(card: &Card, vegetables_carts: &Vec<&Card>, opponen
                 vegetable_counts.push(vegetables_carts.iter().filter(|c| c.vegetable == VegetableType::Tomato as i32).count());
 
                 let zero_count = vegetable_counts.iter().filter(|c| c == &&0).count();
-                return zero_count * other.points as usize;
+                return zero_count as isize * other.points as isize;
             }
             _ => return 0
         }

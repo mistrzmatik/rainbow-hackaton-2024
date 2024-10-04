@@ -8,6 +8,7 @@ use point_salad_server::RoomState;
 use point_salad_server::MoveRequest;
 use point_salad_server::MoveType;
 use tonic::Request;
+use crate::strategies::min_max::MinMaxStrategy;
 use crate::strategies::random::RandomStrategy;
 use crate::strategies::strategy::Strategy;
 
@@ -22,11 +23,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let url = "http://hackaton-2024.rainbowtours.pl:80";
     let url = "http://[::1]:50051";
     let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka";
-    let room_id = "AIT9B";
+    let room_id = "AIT9C";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
-    let number_of_games = 10;
+    let number_of_games = 100;
 
-    let strategy = RandomStrategy::new();
+    let strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() 
+    { 
+        Box::new(MinMaxStrategy::new()) 
+    } 
+    else 
+    { 
+        Box::new(RandomStrategy::new()) 
+    };
     
     let mut client = GameClient::connect(url).await?;
 
