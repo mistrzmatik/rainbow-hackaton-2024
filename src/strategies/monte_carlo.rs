@@ -1,5 +1,7 @@
-use crate::point_salad_server::GameState;
+use crate::point_salad_server::{Card, GameState, VegtableHeld};
 use crate::strategies::strategy::Strategy;
+
+use super::mcts_game_state::MCTSGameState;
 
 pub struct MonteCarloStrategy {
 }
@@ -13,8 +15,8 @@ impl MonteCarloStrategy {
 
 impl Strategy for MonteCarloStrategy {
     fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
-        // let initial_state = StateGame::new();
-        // let mut mcts = MCTS::new(initial_state, 1000);
+        let initial_state = MCTSGameState::new();
+        let mut mcts = MCTS::new(initial_state, 1000);
         // let root = NodeGame::new(initial_state);
         // let best_action = mcts::run(root, 1000);
 

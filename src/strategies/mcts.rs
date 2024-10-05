@@ -4,6 +4,8 @@ use rand::Rng;
 
 use super::mcts_game_state::MCTSGameState;
 
+const EXPLORATION_CONSTANT: f64 = 1.414;  // sqrt(2) for UCT
+
 struct MCTSNode {
     state: MCTSGameState,
     visits: f64,
@@ -12,7 +14,6 @@ struct MCTSNode {
 }
 
 impl MCTSNode {
-    // Create a new node
     fn new(state: MCTSGameState) -> MCTSNode {
         MCTSNode {
             state,

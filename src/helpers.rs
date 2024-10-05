@@ -1,4 +1,20 @@
-/*use crate::{point_salad_server::{Card, GameState, Hand, VegtableHeld}};
+use crate::point_salad_server::{Card, GameState, Hand, Market, VegtableHeld};
+
+pub fn market_cards(state: &GameState) -> Vec<Card> {
+    let mut cards = vec![];
+
+    let market = unwrap_market(&state.market);
+    cards.extend(market.point_cards.clone());
+    cards.extend(market.vegetable_cards.clone());
+
+    cards
+}
+
+pub fn drafted_cards(state: &GameState) -> Vec<Card> {
+    market_cards(state)
+        + hand_cards(my_hand(state))
+        + hand_cards(oponent_hand(state))
+}
 
 pub fn unwrap_hand(hand: &Option<Hand>) -> Hand {
     hand
@@ -9,6 +25,13 @@ pub fn unwrap_hand(hand: &Option<Hand>) -> Hand {
         })
 }
 
+pub fn unwrap_market(market: &Option<Market>) -> Market {
+    market.unwrap_or(Market {
+        point_cards: vec![],
+        vegetable_cards: vec![],
+    })
+}
+
 pub fn my_hand(state: &GameState) -> Hand {
     unwrap_hand(&state.your_hand.clone())
 }
@@ -17,57 +40,36 @@ pub fn oponent_hand(state: &GameState) -> Hand {
     unwrap_hand(&state.opponents_hands.get(0).cloned())
 }
 
-// fn count_points(card: Card, vegetables: Vec<VegtableHeld>) -> i32 {
-//     let mut total_points = 0;
+fn hand_cards(hand: Hand) -> Vec<Card> {
+    let mut cards = vec![];
 
-//     match card.point_type {
-//         1 => {
-//             if let Some(points_per_vegetable) = card.points_per_vegetable {
-//                 total_points += vegetables.iter().filter(|v| v.vegetable_type == card.vegetable).count();
-//             }
-//         }
-//         2 => {
-//             if let Some(sum) = card.sum {
-//                 let total_vegetables = vegetables
-//                     .iter()
-//                     .filter(|v| sum.vegetables.contains(&v.vegetable_type))
-//                     .min
-//                 total_points += total_vegetables * sum.points;
-//             }
-//         }
-//         3 => {
-//             if let Some(even_odd) = card.even_odd {
-//                 if let Some(veg) = vegetables.iter().find(|v| v.vegetable_type == card.vegetable) {
-//                     if veg.count % 2 == 0 {
-//                         total_points += card.points_per_vegetable.unwrap().points.eve;
-//                     } else {
-//                         total_points += card.points_per_vegetable.unwrap().points;
-//                     }
-//                 }
-//             }
-//         }
-//         4 => {
-//             if let Some(fewest_most) = card.fewest_most {
-//                 let min_count = vegetables.iter().map(|v| v.count).min().unwrap_or(0);
-//                 let max_count = vegetables.iter().map(|v| v.count).max().unwrap_or(0);
-                
-//                 if let Some(veg) = vegetables.iter().find(|v| v.vegetable_type == card.vegetable) {
-//                     if veg.count == min_count {
-//                         total_points += fewest_most.fewest_points;
-//                     } else if veg.count == max_count {
-//                         total_points += fewest_most.most_points;
-//                     }
-//                 }
-//             }
-//         }
-//         5 => {
-//             if let Some(other) = card.other {
-//                 total_points += other.points;
-//             }
-//         }
-//         _ => {}
-//     }
+    cards.extend(hand.point_cards.clone());
+    cards.extend(create_cards(hand.vegetables.clone()));
 
-    total_points
-}*/
+    cards
+}
 
+fn create_cards(vegetables_held: Vec<VegtableHeld>) -> Vec<Card> {
+    let mut carts = vec![];
+
+    for vegetable_held in vegetables_held {
+        for _i in 0..vegetable_held.count {
+            carts.push(create_card(vegetable_held.vegetable_type))
+        }
+    }
+
+    carts
+}
+
+fn create_card(vegetable_type: i32) -> Card {
+    Card {
+        vegetable: vegetable_type,
+        point_type: 0,
+        card_id: "unknown".to_string(),
+        sum: None,
+        other: None,
+        fewest_most: None,
+        even_odd: None,
+        points_per_vegetable: None
+    }
+}
