@@ -33,9 +33,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let url = "http://hackaton-2024.rainbowtours.pl:80";
     let url = "http://[::1]:50051";
     let mut player_name = "rozrewolwerowana konstantynopolitańczykowianeczka".to_string();
-    let room_id = "AIT9C";
+    let room_id = "abcd";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
-    let number_of_games = 100;
+    let number_of_games = 50;
 
     let mut strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() {
         player_name += " - MM";
@@ -90,7 +90,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let cards = strategy.make_take_cards_move(&game_state);
 
                     println!(
-                        "Rzucam karty: {:?}",
+                        "Biorę karty: {:?}",
                         cards
                     );
 
@@ -103,6 +103,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 } else {
                     let cards = strategy.make_flip_move(&game_state);
 
+                    if !cards.is_empty() {
+                        println!(
+                            "Flipuje karty: {:?}",
+                            cards
+                        );
+                    }
+                    
                     Request::new(MoveRequest {
                         player_id: room_state.player_id.to_string(),
                         room_id: room_id.to_string(),
