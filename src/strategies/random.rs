@@ -18,7 +18,7 @@ impl RandomStrategy {
 }
 
 impl Strategy for RandomStrategy {
-    fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
+    fn make_take_cards_move(&mut self, state: &GameState) -> Vec<String> {
         let market = state
             .market
             .clone()

@@ -22,13 +22,13 @@ mod better_game_state;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cards = load_all_cards("data.json".to_string());
+    //let cards = load_all_cards("data.json".to_string());
 
-    for card in cards {
-        println!("{:?}", card);
-    }
+    //for card in cards {
+    //    println!("{:?}", card);
+    //}
 
-    return Ok(());
+    //return Ok(());
     
     //let url = "http://hackaton-2024.rainbowtours.pl:80";
     let url = "http://[::1]:50051";
@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
     let number_of_games = 100;
 
-    let strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() {
+    let mut strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() {
         player_name += " - MM";
         Box::new(MinMaxStrategy::new(false))
     }

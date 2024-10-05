@@ -11,7 +11,7 @@ impl DynamicProgramingStrategy {
 }
 
 impl Strategy for DynamicProgramingStrategy {
-    fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
+    fn make_take_cards_move(&mut self, state: &GameState) -> Vec<String> {
         //let my_hand = helpers::my_hand(state);
        // let oponent_hand: Hand = helpers::oponent_hand(state);
 
