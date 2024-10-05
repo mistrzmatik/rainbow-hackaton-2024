@@ -2,17 +2,21 @@ use crate::point_salad_server::{Card, GameState, Hand, Market, VegtableHeld};
 use crate::points::calculate_points;
 use crate::strategies::strategy::Strategy;
 
-pub struct MinMaxStrategy {}
+pub struct MinMaxStrategy {
+    is_flip_enabled: bool
+}
 
 impl MinMaxStrategy {
-    pub fn new() -> MinMaxStrategy {
-        MinMaxStrategy {}
+    pub fn new(is_flip_enabled: bool) -> MinMaxStrategy {
+        MinMaxStrategy {
+            is_flip_enabled
+        }
     }
 }
 
 impl Strategy for MinMaxStrategy {
     fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
-        
+
         let your_hand = state.your_hand.clone().unwrap_or(Hand {
             point_cards: vec![],
             vegetables: vec![]
@@ -21,12 +25,12 @@ impl Strategy for MinMaxStrategy {
             point_cards: vec![],
             vegetables: vec![]
         }).clone();
-        
+
         let base_cards = [your_hand.point_cards.as_slice(), create_cards(your_hand.vegetables).as_slice()].concat();
         let base_opponent_cards = [opponents_hand.point_cards.as_slice(), create_cards(opponents_hand.vegetables).as_slice()].concat();
-        
+
         let base_points = calculate_points(&base_cards, &base_opponent_cards);
-        
+
         let market = state.market.clone().unwrap_or(Market {
             point_cards: vec![],
             vegetable_cards: vec![]
@@ -39,7 +43,7 @@ impl Strategy for MinMaxStrategy {
         for market_point_card in market_point_cards {
             let possible_new_cards = vec![market_point_card.clone()];
             let possible_cards = [base_cards.as_slice(), possible_new_cards.as_slice()].concat();;
-            
+
             let possible_points = calculate_points(&possible_cards, &base_opponent_cards);
 
             if possible_points > max_points {
@@ -47,7 +51,7 @@ impl Strategy for MinMaxStrategy {
                 max_option = possible_new_cards.iter().map(|c| c.card_id.to_string()).collect();
             }
         }
-        
+
         if market_vegetable_cards.len() == 1 {
             let possible_new_cards = vec![market_vegetable_cards.first().unwrap().clone().clone()];
             let possible_cards = [base_cards.as_slice(), possible_new_cards.as_slice()].concat();
@@ -65,7 +69,7 @@ impl Strategy for MinMaxStrategy {
                 if market_vegetable_card_one.card_id == market_vegetable_card_two.card_id {
                     continue;
                 }
-                
+
                 let possible_new_cards = vec![market_vegetable_card_one.clone().clone(), market_vegetable_card_two.clone().clone()];
                 let possible_cards = [base_cards.as_slice(), possible_new_cards.as_slice()].concat();
 
@@ -82,7 +86,11 @@ impl Strategy for MinMaxStrategy {
     }
 
     fn make_flip_move(&self, state: &GameState) -> Vec<String> {
-        /*let your_hand = state.your_hand.clone().unwrap_or(Hand {
+        if !self.is_flip_enabled {
+            return vec![]
+        }
+        
+        let your_hand = state.your_hand.clone().unwrap_or(Hand {
             point_cards: vec![],
             vegetables: vec![]
         });
@@ -102,18 +110,18 @@ impl Strategy for MinMaxStrategy {
             let mut possible_cards = your_hand.point_cards.clone();
             let index = your_hand.point_cards.iter().position(|x| x == point_card).unwrap();
             possible_cards.remove(index);
-            
+
             let possible_points = calculate_points(&possible_cards, &base_opponent_cards);
             if possible_points > max_points {
                 max_points = possible_points;
                 max_option = vec![point_card.card_id.to_string()]
             }
         }
-        
+
         if max_points > base_points {
             return max_option;
-        }*/
-        
+        }
+
         vec![]
     }
 }

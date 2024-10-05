@@ -27,13 +27,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
     let number_of_games = 100;
 
-    let strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() 
-    {
-        player_name += " - MINMAX";
-        Box::new(MinMaxStrategy::new())
-    } 
-    else 
-    { 
+    let strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() {
+        player_name += " - MM";
+        Box::new(MinMaxStrategy::new(false))
+    }
+    else if std::env::var("MINMAX_FLIP").is_ok() {
+        player_name += " - MMF";
+        Box::new(MinMaxStrategy::new(true))
+    }
+    else { 
         Box::new(RandomStrategy::new()) 
     };
     
