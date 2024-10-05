@@ -10,7 +10,7 @@ impl MonteCarloStrategy {
 }
 
 impl Strategy for MonteCarloStrategy {
-    fn make_take_cards_move(&self, state: &GameState) -> Vec<String> {
+    fn make_take_cards_move(&mut self, state: &GameState) -> Vec<String> {
         todo!()
     }
 
