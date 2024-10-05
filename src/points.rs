@@ -189,7 +189,7 @@ mod tests {
     }
 
     #[test]
-    fn test_points_per_vegetable_score() { // -- to fix
+    fn test_points_per_vegetable_score() {
         let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
         let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
         let points_per_vegetable = PointsPerVegetable {
@@ -205,7 +205,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sum_score() {
+    fn test_sum_score_same_vegetable() {
         let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
         let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
         let sum = Sum {
@@ -213,9 +213,24 @@ mod tests {
             points: 5,
         };
 
-        let vegetables_carts = vec![&cabbage_card, &carrot_card, &cabbage_card];
+        let vegetables_carts = vec![&cabbage_card, &carrot_card, &cabbage_card, &cabbage_card, &cabbage_card];
         let score = sum_score(sum, &vegetables_carts);
-        assert_eq!(score, 5); // 2 cabbages, same type, so 1 * 5 = 5
+        assert_eq!(score, 10); // 4 cabbages, same type, so 2 * 5 = 10
+    }
+    
+    #[test]
+    fn test_sum_score_same_different_vegetables() {
+        let lettuce_card = Card { vegetable: VegetableType::Lettuce as i32, ..Default::default() };
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let sum = Sum {
+            vegetables: vec![VegetableType::Carrot as i32, VegetableType::Cabbage as i32],
+            points: 5,
+        };
+
+        let vegetables_carts = vec![&cabbage_card, &carrot_card, &cabbage_card, &lettuce_card, &cabbage_card];
+        let score = sum_score(sum, &vegetables_carts);
+        assert_eq!(score, 5); // 3 cabbage and 1 carrot_card, 1 sum, so 1 * 5 = 5
     }
 
     #[test]
@@ -228,17 +243,25 @@ mod tests {
             odd: 5,
         };
 
-        let vegetables_carts = vec![&cabbage_card, &cabbage_card];
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card, &cabbage_card];
+        let score = even_odd_score(even_odd, &vegetables_carts);
+        assert_eq!(score, 5); // 3 cabbages, odd number, so 5 points
+
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card, &carrot_card];
         let score = even_odd_score(even_odd, &vegetables_carts);
         assert_eq!(score, 10); // 2 cabbages, even number, so 10 points
 
         let vegetables_carts = vec![&cabbage_card];
         let score = even_odd_score(even_odd, &vegetables_carts);
         assert_eq!(score, 5); // 1 cabbage, odd number, so 5 points
+
+        let vegetables_carts = vec![&carrot_card];
+        let score = even_odd_score(even_odd, &vegetables_carts);
+        assert_eq!(score, 5); // 0 cabbage, odd number, so 5 points
     }
 
     #[test]
-    fn test_fewest_most_score() {
+    fn test_fewest_most_score_most() {
         let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
         let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
         let fewest_most = FewestMost {
@@ -256,6 +279,37 @@ mod tests {
         let opponent_vegetables_carts = vec![&carrot_card];
         let score = fewest_most_score(fewest_most, &card, &vegetables_carts, &opponent_vegetables_carts);
         assert_eq!(score, 3); // player has 2 cabbages, opponent has 0 cabbages, so MOST is true, 3 points
+    
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card];
+        let opponent_vegetables_carts = vec![&carrot_card, &cabbage_card, &cabbage_card, &cabbage_card];
+        let score = fewest_most_score(fewest_most, &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 0); // player has 2 cabbages, opponent has 3 cabbages, so MOST is false, 0 points
+    }
+
+    #[test]
+    fn test_fewest_most_score_fewest() {
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let fewest_most = FewestMost {
+            vegetable: VegetableType::Cabbage as i32,
+            points: 3,
+        };
+
+        let card = Card {
+            vegetable: VegetableType::Cabbage as i32,
+            point_type: FEWEST,
+            ..Default::default()
+        };
+
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card];
+        let opponent_vegetables_carts = vec![&carrot_card];
+        let score = fewest_most_score(fewest_most, &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 0); // player has 2 cabbages, opponent has 0 cabbages, i have most, 0 points
+    
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card];
+        let opponent_vegetables_carts = vec![&carrot_card, &cabbage_card, &cabbage_card, &cabbage_card];
+        let score = fewest_most_score(fewest_most, &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 3); // player has 2 cabbages, opponent has 3 cabbages, i have fewest, 3 points
     }
 
     #[test]
@@ -277,7 +331,7 @@ mod tests {
     }
 
     #[test]
-    fn test_calculate_points_for_card_points_per_vegetable() { // -- to fix
+    fn test_calculate_points_for_card_points_per_vegetable() {
         let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
         let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
         let points_per_vegetable = PointsPerVegetable {
@@ -289,8 +343,141 @@ mod tests {
         };
 
         let vegetables_carts = vec![&cabbage_card, &carrot_card, &cabbage_card];
-        let opponent_vegetables_carts = vec![];
+        let opponent_vegetables_carts = vec![&carrot_card];
         let points = calculate_points_for_card(&card, &vegetables_carts, &opponent_vegetables_carts);
         assert_eq!(points, 4); // 2 cabbages, 2 points each
+    }
+
+    #[test]
+    fn test_other_most_total_score() {
+        let other = Other { points: 5 };
+
+        // Case 1: total_vegetable_count >= total_opponent_vegetable_count
+        let score = other_most_total_score(other.clone(), 10, 8);
+        assert_eq!(score, 5); // Points should be awarded
+
+        // Case 2: total_vegetable_count < total_opponent_vegetable_count
+        let score = other_most_total_score(other.clone(), 7, 8);
+        assert_eq!(score, 0); // No points should be awarded
+    }
+
+    #[test]
+    fn test_other_fewest_total_score() {
+        let other = Other { points: 4 };
+
+        // Case 1: total_vegetable_count <= total_opponent_vegetable_count
+        let score = other_fewest_total_score(other.clone(), 7, 10);
+        assert_eq!(score, 4); // Points should be awarded
+
+        // Case 2: total_vegetable_count > total_opponent_vegetable_count
+        let score = other_fewest_total_score(other.clone(), 10, 7);
+        assert_eq!(score, 0); // No points should be awarded
+    }
+
+    #[test]
+    fn test_other_at_least() {
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let lettuce_card = Card { vegetable: VegetableType::Lettuce as i32, ..Default::default() };
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card, &carrot_card, &lettuce_card];
+
+        let other = Other { points: 3 };
+        let card_at_least_two = Card { point_type: AT_LEAST_TWO, ..Default::default() };
+        let card_at_least_three = Card { point_type: AT_LEAST_THREE, ..Default::default() };
+
+        // Case 1: At least two
+        let score = other_at_least(other.clone(), &card_at_least_two, &vegetables_carts);
+        assert_eq!(score, 3); // 1 set of >= 2 cabbages, 3 points * 1 = 3
+
+        // Case 2: At least three
+        let score = other_at_least(other.clone(), &card_at_least_three, &vegetables_carts);
+        assert_eq!(score, 0); // No vegetables with at least 3 count
+    }
+
+    #[test]
+    fn test_other_complete_set() {
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let lettuce_card = Card { vegetable: VegetableType::Lettuce as i32, ..Default::default() };
+        let onion_card = Card { vegetable: VegetableType::Onion as i32, ..Default::default() };
+        let tomato_card = Card { vegetable: VegetableType::Tomato as i32, ..Default::default() };
+        let pepper_card = Card { vegetable: VegetableType::Pepper as i32, ..Default::default() };
+
+        let other = Other { points: 4 };
+
+        // Case 1: Min is 2 vegetable type
+        let double_vegetables_carts: Vec<&Card> = vec![&cabbage_card, &carrot_card, &lettuce_card, &cabbage_card, &onion_card, &tomato_card, &pepper_card,
+            &cabbage_card, &carrot_card, &lettuce_card, &cabbage_card, &onion_card, &tomato_card, &pepper_card];
+        let score = other_complete_set(other.clone(), &double_vegetables_carts);
+        assert_eq!(score, 8); // Minimum vegetable count is 2, so 2 * 4 = 8
+
+        // Case 2: Min is 1 vegetable type
+        let vegetables_carts = vec![&cabbage_card, &carrot_card, &lettuce_card, &cabbage_card, &onion_card, &tomato_card, &pepper_card];
+        let score = other_complete_set(other.clone(), &vegetables_carts);
+        assert_eq!(score, 4); // Minimum vegetable count is 1, so 1 * 4 = 4
+       
+        // Case 3: Half vegetable_carts
+        let half_vegetables_carts: Vec<&Card> = vec![&cabbage_card, &carrot_card, &lettuce_card, &cabbage_card];
+        let score = other_complete_set(other.clone(), &half_vegetables_carts);
+        assert_eq!(score, 0); // No vegetables, so 0 points
+        
+        // Case 4: Empty vegetable_carts
+        let empty_vegetables_carts: Vec<&Card> = vec![];
+        let score = other_complete_set(other.clone(), &empty_vegetables_carts);
+        assert_eq!(score, 0); // No vegetables, so 0 points
+    }
+
+    #[test]
+    fn test_other_missing_vegetable() {
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let vegetables_carts = vec![&cabbage_card, &cabbage_card, &carrot_card];
+
+        let other = Other { points: 2 };
+
+        // Case 1: Two missing vegetables (Lettuce, Onion, Pepper, Tomato)
+        let score = other_missing_vegetable(other.clone(), &vegetables_carts);
+        assert_eq!(score, 8); // 4 missing types * 2 points each = 8
+
+        // Case 2: No missing vegetables (if all types are present)
+        let lettuce_card = Card { vegetable: VegetableType::Lettuce as i32, ..Default::default() };
+        let onion_card = Card { vegetable: VegetableType::Onion as i32, ..Default::default() };
+        let pepper_card = Card { vegetable: VegetableType::Pepper as i32, ..Default::default() };
+        let tomato_card = Card { vegetable: VegetableType::Tomato as i32, ..Default::default() };
+        let full_vegetables_carts = vec![
+            &cabbage_card, &carrot_card, &lettuce_card, &onion_card, &pepper_card, &tomato_card
+        ];
+        let score = other_missing_vegetable(other.clone(), &full_vegetables_carts);
+        assert_eq!(score, 0); // No missing types, so 0 points
+    }
+
+    #[test]
+    fn test_other_score() {
+        let cabbage_card = Card { vegetable: VegetableType::Cabbage as i32, ..Default::default() };
+        let carrot_card = Card { vegetable: VegetableType::Carrot as i32, ..Default::default() };
+        let vegetables_carts = vec![&cabbage_card, &carrot_card];
+        let opponent_vegetables_carts = vec![&carrot_card];
+
+        let other = Other { points: 5 };
+
+        // Case 1: MOST_TOTAL
+        let card = Card { point_type: MOST_TOTAL, ..Default::default() };
+        let score = other_score(other.clone(), &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 5); // Player has more total vegetables, so 5 points
+
+        // Case 2: FEWEST_TOTAL
+        let card = Card { point_type: FEWEST_TOTAL, ..Default::default() };
+        let score = other_score(other.clone(), &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 0); // Player does not have the fewest total, so no points
+
+        // Case 3: COMPLETE_SET
+        let card = Card { point_type: COMPLETE_SET, ..Default::default() };
+        let score = other_score(other.clone(), &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 5); // Both have at least one of each type, so 5 points
+
+        // Case 4: AT_LEAST_TWO
+        let card = Card { point_type: AT_LEAST_TWO, ..Default::default() };
+        let score = other_score(other.clone(), &card, &vegetables_carts, &opponent_vegetables_carts);
+        assert_eq!(score, 5); // At least 2 of one type, 5 points
     }
 }
