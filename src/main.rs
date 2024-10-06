@@ -32,18 +32,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     //let url = "http://hackaton-2024.rainbowtours.pl:80";
     let url = "http://[::1]:50051";
-    let mut player_name = "rozrewolwerowana konstantynopolitańczykowianeczka".to_string();
-    let room_id = "abcd";
+    ///let url = "http://192.168.50.240:50051";
+    let player_name = "rozrewolwerowana konstantynopolitańczykowianeczka".to_string();
+    let room_id = "A";
     let new = std::env::args().any(|arg| arg == "--new") || std::env::var("NEW").is_ok();
-    let number_of_games = 50;
+    let number_of_games = 100;
 
     let mut strategy: Box<dyn Strategy> = if std::env::var("MINMAX").is_ok() {
-        player_name += " - MM";
-        Box::new(MinMaxStrategy::new(false))
+        //player_name += " - MM0";
+        Box::new(MinMaxStrategy::new(0))
     }
-    else if std::env::var("MINMAX_FLIP").is_ok() {
-        player_name += " - MMF";
-        Box::new(MinMaxStrategy::new(true))
+    else if std::env::var("MINMAX_1").is_ok() {
+        //player_name += " - MM1";
+        Box::new(MinMaxStrategy::new(1))
     }
     else { 
         Box::new(RandomStrategy::new()) 
@@ -89,10 +90,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let request = if game_state.move_to_make == <MoveType as Into<i32>>::into(MoveType::TakeCards) {
                     let cards = strategy.make_take_cards_move(&game_state);
 
-                    println!(
-                        "Biorę karty: {:?}",
-                        cards
-                    );
+                    //println!(
+                    //    "Biorę karty: {:?}",
+                    //    cards
+                    //);
 
                     Request::new(MoveRequest {
                         player_id: room_state.player_id.to_string(),
@@ -103,12 +104,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 } else {
                     let cards = strategy.make_flip_move(&game_state);
 
-                    if !cards.is_empty() {
-                        println!(
-                            "Flipuje karty: {:?}",
-                            cards
-                        );
-                    }
+                    //if !cards.is_empty() {
+                    //    println!(
+                    //        "Flipuje karty: {:?}",
+                    //        cards
+                    //    );
+                    //}
                     
                     Request::new(MoveRequest {
                         player_id: room_state.player_id.to_string(),
