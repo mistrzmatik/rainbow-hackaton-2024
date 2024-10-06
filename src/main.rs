@@ -8,6 +8,7 @@ use point_salad_server::JoinRoomRequest;
 use point_salad_server::RoomState;
 use point_salad_server::MoveRequest;
 use point_salad_server::MoveType;
+use strategies::monte_carlo::MonteCarloStrategy;
 use tonic::Request;
 use crate::strategies::min_max::MinMaxStrategy;
 use crate::strategies::random::RandomStrategy;
@@ -49,6 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     else { 
         Box::new(RandomStrategy::new()) 
     };
+    // let strategy: MonteCarloStrategy = MonteCarloStrategy::new();
     
     let mut client = GameClient::connect(url).await?;
 
